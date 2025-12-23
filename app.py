@@ -21,6 +21,9 @@ YES_NO_NOINT = ["Yes", "No", "No internet service"]
 YES_NO_NOPHONE = ["Yes", "No", "No phone service"]
 
 with st.form("churn_form"):
+    # ✅ INPUT WAJIB: Customer ID
+    customer_id = st.text_input("Customer ID (wajib diisi)", placeholder="Contoh: 7590-VHVEG")
+
     col1, col2 = st.columns(2)
 
     with col1:
@@ -56,6 +59,11 @@ with st.form("churn_form"):
     submitted = st.form_submit_button("Prediksi")
 
 if submitted:
+    # ✅ Validasi wajib isi Customer ID
+    if customer_id.strip() == "":
+        st.error("Customer ID wajib diisi!")
+        st.stop()
+
     input_df = pd.DataFrame([{
         "gender": gender,
         "SeniorCitizen": SeniorCitizen,
@@ -80,6 +88,8 @@ if submitted:
 
     pred = model.predict(input_df)[0]
     proba = model.predict_proba(input_df)[0][1] if hasattr(model, "predict_proba") else None
+
+    st.caption(f"Customer ID: **{customer_id.strip()}**")
 
     if pred == 1:
         st.error("⚠️ Prediksi: CHURN (Yes)")
